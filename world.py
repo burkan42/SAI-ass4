@@ -9,6 +9,7 @@ By Thomas Moerland
 
 import numpy as np
 import itertools
+import timeit
 
 class World:
 
@@ -233,4 +234,7 @@ if __name__ == '__main__':
     for state in env.states:
         env.print_state(state)
     
+    execution_time = timeit.timeit(timeit.main, number=1)
+    print(execution_time)
+
     

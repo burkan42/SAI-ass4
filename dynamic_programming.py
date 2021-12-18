@@ -17,6 +17,7 @@ class Dynamic_Programming:
         self.Q_sa = None # will store a potential action-value solution table
         
     def value_iteration(self,env,gamma = 1.0, theta=0.001):
+        pass
         ''' Executes value iteration on env. 
         gamma is the discount factor of the MDP
         theta is the acceptance threshold for convergence '''
@@ -34,11 +35,11 @@ class Dynamic_Programming:
                 
                 for a in env.actions:
                     vector_s, reward_s = env.transition_function(s,a)
-                    #print(f'vector_s: {vector_s}, reward_s: {reward_s}')
+                    
                     v = reward_s + (gamma * V_s[vector_s])
                     if v > V_new:
                         V_new = v
-                #V_s  = max(V_s)
+                
                 V_s[s] = V_new
                 biggest_value = max(biggest_value, np.absolute(V_old -V_new))
             if biggest_value < theta:
@@ -56,8 +57,24 @@ class Dynamic_Programming:
         # initialize state-action value table
         Q_sa = np.zeros([env.n_states,env.n_actions])
 
-        ## IMPLEMENT YOUR Q-VALUE ITERATION ALGORITHM HERE
-        print("You still need to implement Q-value iteration!")
+        while True:
+            biggest_value = 0
+            for s in env.states:
+                
+                Q_old = Q_sa[s]
+                Q_new = 0
+                
+                for a in env.actions:
+                    next_state, reward_s = env.transition_function(s,a)
+                    best_next_action = np.argmax(Q_sa[next_state])
+                    v = reward_s + (gamma * Q_sa[next_state][best_next_action]) - Q_sa[s][a]
+                    if v > Q_new:
+                        Q_new = v
+                
+                Q_sa[s][a] = Q_new
+                biggest_value = max(biggest_value, np.absolute(Q_old - Q_new))
+            if biggest_value < theta:
+                break
 
         self.Q_sa = Q_sa
         return
@@ -71,15 +88,20 @@ class Dynamic_Programming:
             current_state = env.get_current_state() # this is the current state of the environment, from which you will act
             available_actions = env.actions
             # Compute action values
-            if table == 'V' and self.V_s is not None:
-                ## IMPLEMENT ACTION VALUE ESTIMATION FROM self.V_s HERE !!!
-                
-                print("You still need to implement greedy action selection from the value table self.V_s!")
-                greedy_action = get_greedy_index(1)
-                print(greedy_action)
+            if table == 'V' and self.V_s is not None:           
 
+                V_new = 0
+                for a in available_actions:
+                    next_state, reward_s = env.transition_function(current_state, a)
+                    
+                    v = reward_s + self.V_s[next_state]
+                    if v > V_new:
+                        V_new = v
+                        best_action = a
+                             
                 
-            
+                greedy_action = best_action
+
             elif table == 'Q' and self.Q_sa is not None:
                 ## IMPLEMENT ACTION VALUE ESTIMATION FROM self.Q_sa here !!!
                 
