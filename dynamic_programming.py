@@ -41,10 +41,10 @@ class Dynamic_Programming:
                         V_new = v
                 
                 V_s[s] = V_new
-                biggest_value = max(biggest_value, np.absolute(V_old -V_new))
+                biggest_value = max(biggest_value, np.absolute(V_old - V_new))
             if biggest_value < theta:
                 break
-        print(V_s)
+        
         self.V_s = V_s
         return
 
@@ -56,27 +56,32 @@ class Dynamic_Programming:
         print("Starting Q-value Iteration (QI)")
         # initialize state-action value table
         Q_sa = np.zeros([env.n_states,env.n_actions])
-
+        
         while True:
             biggest_value = 0
             for s in env.states:
-                
-                Q_old = Q_sa[s]
-                Q_new = 0
-                
                 for a in env.actions:
+                    
+                    if a == 'up':
+                        m = 0
+                    elif a == 'down':
+                        m = 1
+                    elif a == 'left':
+                        m = 2  
+                    elif a == 'right':
+                        m = 3
                     next_state, reward_s = env.transition_function(s,a)
-                    best_next_action = np.argmax(Q_sa[next_state])
-                    v = reward_s + (gamma * Q_sa[next_state][best_next_action]) - Q_sa[s][a]
-                    if v > Q_new:
-                        Q_new = v
-                
-                Q_sa[s][a] = Q_new
-                biggest_value = max(biggest_value, np.absolute(Q_old - Q_new))
-            if biggest_value < theta:
+                    
+                    best_next_action = np.argmax(Q_sa[next_state][m])
+                    v = reward_s + (gamma * Q_sa[next_state][best_next_action])
+                    print(f'M is {m} en v is {v}')#print(Q_sa)
+                    Q_sa[s][m] = v
+                #biggest_value = max(biggest_value, np.absolute(Q_old - Q_new))
+            if s == 63:
                 break
-
+        
         self.Q_sa = Q_sa
+        print(self.Q_sa)
         return
                 
     def execute_policy(self,env,table='V'):
